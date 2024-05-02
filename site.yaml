@@ -1,0 +1,48 @@
+---
+#- name: Prepare Proxmox cluster
+#  hosts: proxmox
+#  gather_facts: true
+#  become: yes
+#  environment: "{{ proxy_env | default({}) }}"
+#  roles:
+#    - role: proxmox_lxc
+#      when: proxmox_lxc_configure
+
+- name: Prepare rke2 nodes
+  hosts: rke2_cluster
+  gather_facts: yes
+  environment: "{{ proxy_env | default({}) }}"
+  roles:
+    - role: prereq
+      become: true
+    - role: download
+      become: true
+    - role: rke2_custom_registries
+      become: true
+      when: custom_registries
+
+- name: Setup rke2 servers
+  hosts: master
+  environment: "{{ proxy_env | default({}) }}"
+  roles:
+    - role: rke2_server
+      become: true
+
+- name: Setup rke2 agents
+  hosts: node
+  environment: "{{ proxy_env | default({}) }}"
+  roles:
+    - role: rke2_agent
+      become: true
+  tags:
+    - agents
+
+
+- name: Configure rke2 cluster
+  hosts: master
+  environment: "{{ proxy_env | default({}) }}"
+  roles:
+    - role: rke2_server_post
+      become: true
+  tags:
+    - post

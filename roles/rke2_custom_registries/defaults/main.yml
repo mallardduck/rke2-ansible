@@ -1,0 +1,6 @@
+---
+# Indicates whether custom registries for rke2 should be configured
+# Possible values:
+#   - present
+#   - absent
+state: present

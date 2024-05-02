@@ -1,0 +1,11 @@
+node-ip: {{ rke2_node_ip }}
+{% if groups[group_name_master | default('master')] | length > 1 %}
+{% if ansible_hostname != hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname'] %}
+server: https://{{ hostvars[groups[group_name_master | default('master')][0]].rke2_node_ip | split(",") | first | ansible.utils.ipwrap }}:9345
+{% endif %}
+{% if rke2_token is defined or hostvars[groups[group_name_master | default('master')][0]]['token'] is defined %}
+token: {{ rke2_token | default(hostvars[groups[group_name_master | default('master')][0]]['token']) }}
+{% endif %}
+{% endif %}
+tls-san:
+  - {{ apiserver_endpoint }}

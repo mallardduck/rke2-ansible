@@ -1,0 +1,36 @@
+---
+- name: Download and execute RKE2 installer
+  get_url:
+    url: https://get.rke2.io
+    dest: /tmp/get_rke2.sh
+    mode: 0755  # Set executable permissions
+
+- name: Execute downloaded installer (on control plane)
+  shell: "/tmp/get_rke2.sh"
+  when: "'master' in group_names"
+
+- name: Execute downloaded installer (on node)
+  shell: "INSTALL_RKE2_TYPE=agent /tmp/get_rke2.sh"
+  when: "'node' in group_names"
+
+- name: Update PATH env var
+  become: yes
+  lineinfile:
+    path: /etc/profile
+    line: 'export PATH="$PATH:/var/lib/rancher/rke2/bin/"'
+    regexp: '^export PATH='
+    state: present
+  tags:
+    - path
+
+- name: Update PATH env var
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    line: 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml'
+    regexp: '^export KUBECONFIG='
+    state: present
+  tags:
+    - path
+
+# TODO: auto setup bash completion - move some where else..can only be done after RKE2 service runs once...

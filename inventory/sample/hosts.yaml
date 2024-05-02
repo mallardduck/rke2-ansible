@@ -1,0 +1,23 @@
+all:
+  vars:
+    ansible_ssh_common_args: "-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+  children:
+    rke2_cluster:
+      hosts:
+        name01:
+          ansible_host: 192.168.30.38
+        name02:
+          ansible_host: 192.168.30.39
+        name03:
+          ansible_host: 192.168.30.40
+        worker01:
+          ansible_host: 192.168.30.41
+    master:
+      hosts:
+        name01: {}
+        name02: {}
+        name03: {}
+    node:
+      host:
+        worker01: {}

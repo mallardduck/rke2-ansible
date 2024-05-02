@@ -1,0 +1,2 @@
+server: https://{{ apiserver_endpoint | ansible.utils.ipwrap }}:9345
+token: {{ rke2_token | default(hostvars[groups[group_name_master | default('master')][0]]['token']) }}

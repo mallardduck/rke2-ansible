@@ -1,0 +1,13 @@
+---
+- name: Deploy metallb pool
+  include_tasks: metallb.yml
+  tags: metallb
+
+- name: Remove tmp directory used for manifests
+  file:
+    path: /tmp/rke2
+    state: absent
+
+- name: Fetch the k3s config and save local
+  import_tasks: "fetch_rke2_conf.yml"
+  when: ansible_hostname == hostvars[groups['master'][0]]['ansible_hostname']

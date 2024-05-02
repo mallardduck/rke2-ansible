@@ -1,0 +1,42 @@
+---
+- name: Create manifests directory on first master
+  file:
+    path: /var/lib/rancher/rke2/server/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Download vip rbac manifest to first master
+  ansible.builtin.get_url:
+    url: "https://kube-vip.io/manifests/rbac.yaml"
+    dest: "/var/lib/rancher/rke2/server/manifests/vip-rbac.yaml"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Copy RKE2 VIP manifest
+  vars:
+    kubeVipName: rke2
+    kubeVipPort: 9345
+  template:
+    src: "vip.yaml.j2"
+    dest: "/var/lib/rancher/rke2/server/manifests/vip-rke2.yaml"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Copy k8s VIP manifest
+  vars:
+    kubeVipName: kube
+    kubeVipPort: 6443
+  template:
+    src: "vip.yaml.j2"
+    dest: "/var/lib/rancher/rke2/server/manifests/vip-k8s.yaml"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']

@@ -1,0 +1,17 @@
+---
+
+- name: Create directory /etc/rancher/rke2
+  file:
+    path: "/etc/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - rancher
+    - rancher/rke2
+
+- name: Insert registries into /etc/rancher/rke2/registries.yaml
+  blockinfile:
+    path: /etc/rancher/rke2/registries.yaml
+    block: "{{ custom_registries_yaml }}"
+    mode: '0600'
+    create: true

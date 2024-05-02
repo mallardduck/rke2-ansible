@@ -1,0 +1,4 @@
+.idea
+inventory/*
+!inventory/sample
+kube_config_cluster.yml

@@ -1,0 +1,30 @@
+---
+
+- name: Deploy K3s http_proxy conf
+  include_tasks: http_proxy.yml
+  when: proxy_env is defined
+
+- name: Create directory for rke2 configuration
+  become: yes
+  file:
+    path: /etc/rancher/rke2
+    state: directory
+  tags:
+    - rke2
+
+- name: Configure rke2-agent service
+  become: yes
+  template:
+    src: templates/config.yaml.j2
+    dest: /etc/rancher/rke2/config.yaml
+  tags:
+    - rke2
+
+- name: Enable and check K3s service
+  systemd:
+    name: rke2-agent
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  tags:
+    - rke2
